@@ -1,4 +1,4 @@
-# Notely 📝
+# Notely 📝 (using DJANGO & REACT)
 
 Notely is a sleek and simple personal note-taking web app built with **React**, **Django**, and **Tailwind CSS**.  
 Keep track of your tasks, mark them as done, delete them, and reorder them with ease.
