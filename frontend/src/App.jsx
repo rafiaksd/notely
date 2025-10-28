@@ -1,5 +1,10 @@
 import { useEffect, useState } from "react";
 import api from "./api";
+import {
+  DragDropContext,
+  Droppable,
+  Draggable,
+} from "@hello-pangea/dnd";
 
 function NoteItem({
   note,
@@ -43,7 +48,6 @@ function NoteItem({
               {note.title}
             </h3>
 
-            {/* Show completion timestamp */}
             {note.completed && note.completed_at && (
               <p className="text-xs text-gray-400 mt-1">
                 Completed{" "}
@@ -58,20 +62,20 @@ function NoteItem({
       </div>
 
       <div className="flex space-x-2">
-        {/* Disable sorting for finished notes */}
+        {/* Up / Down buttons – only for unfinished tasks */}
         {!disableSort && !isEditing && (
           <>
             <button
               onClick={() => onMoveUp(note.id)}
               className="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300 text-sm"
             >
-              ↑
+              Up
             </button>
             <button
               onClick={() => onMoveDown(note.id)}
               className="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300 text-sm"
             >
-              ↓
+              Down
             </button>
           </>
         )}
@@ -118,6 +122,9 @@ function App() {
   const [notes, setNotes] = useState([]);
   const [title, setTitle] = useState("");
 
+  /* ------------------------------------------------------------------ */
+  /*  FETCH / CREATE / DELETE / UPDATE / COMPLETE                       */
+  /* ------------------------------------------------------------------ */
   useEffect(() => {
     fetchNotes();
   }, []);
@@ -150,7 +157,6 @@ function App() {
     );
   };
 
-  //test comment
   const toggleComplete = async (id) => {
     const note = notes.find((n) => n.id === id);
     const completed = !note.completed;
@@ -164,6 +170,9 @@ function App() {
     );
   };
 
+  /* ------------------------------------------------------------------ */
+  /*  MOVE (UP / DOWN) – used by the ↑/↓ buttons                        */
+  /* ------------------------------------------------------------------ */
   const moveNote = async (id, direction, completed) => {
     const sectionNotes = notes.filter((n) => n.completed === completed);
     const index = sectionNotes.findIndex((n) => n.id === id);
@@ -191,13 +200,47 @@ function App() {
     setNotes([...otherSection, ...updatedSection]);
   };
 
+  /* ------------------------------------------------------------------ */
+  /*  DRAG-AND-DROP HANDLER                                            */
+  /* ------------------------------------------------------------------ */
+  const handleDragEnd = async (result) => {
+    if (!result.destination) return; // dropped outside the list
+    const { source, destination } = result;
+    if (source.index === destination.index) return; // no change
+
+    const reordered = Array.from(activeNotes);
+    const [moved] = reordered.splice(source.index, 1);
+    reordered.splice(destination.index, 0, moved);
+
+    // Optimistically update UI
+    setNotes((prev) => {
+      const finished = prev.filter((n) => n.completed);
+      return [...finished, ...reordered];
+    });
+
+    // Persist new positions
+    await Promise.all(
+      reordered.map((note, i) => api.patch(`notes/${note.id}/`, { position: i }))
+    );
+
+    // Refresh from server (optional – keeps UI in sync with other clients)
+    fetchNotes();
+  };
+
+  /* ------------------------------------------------------------------ */
+  /*  DERIVED LISTS                                                    */
+  /* ------------------------------------------------------------------ */
   const activeNotes = notes
     .filter((n) => !n.completed)
     .sort((a, b) => a.position - b.position);
+
   const finishedNotes = notes
     .filter((n) => n.completed)
     .sort((a, b) => new Date(b.completed_at) - new Date(a.completed_at));
 
+  /* ------------------------------------------------------------------ */
+  /*  RENDER                                                          */
+  /* ------------------------------------------------------------------ */
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-100 via-white to-purple-100 flex flex-col items-center py-10 px-6">
       {/* Header */}
@@ -205,7 +248,7 @@ function App() {
         <h1 className="text-5xl font-extrabold text-indigo-600 drop-shadow-sm mb-2">
           Notely
         </h1>
-        <p className="text-gray-500">Your elegant personal notetaker ✨</p>
+        <p className="text-gray-500">Your elegant personal notetaker</p>
       </div>
 
       {/* Input Form */}
@@ -228,30 +271,59 @@ function App() {
         </button>
       </form>
 
-      {/* To-Do Section */}
+      {/* ---------- TO-DO (drag-and-drop) ---------- */}
       <div className="w-full max-w-5xl mb-10">
         <h2 className="text-2xl font-semibold text-gray-700 mb-4">To-Do</h2>
+
         {activeNotes.length === 0 ? (
           <p className="text-gray-400 italic text-center">
             No tasks yet — add one above!
           </p>
         ) : (
-          activeNotes.map((note) => (
-            <NoteItem
-              key={note.id}
-              note={note}
-              onToggleComplete={toggleComplete}
-              onDelete={deleteNote}
-              onMoveUp={(id) => moveNote(id, -1, false)}
-              onMoveDown={(id) => moveNote(id, 1, false)}
-              onUpdate={updateNote}
-              disableSort={false}
-            />
-          ))
+          <DragDropContext onDragEnd={handleDragEnd}>
+            <Droppable droppableId="todo">
+              {(provided) => (
+                <div
+                  {...provided.droppableProps}
+                  ref={provided.innerRef}
+                  className="space-y-2"
+                >
+                  {activeNotes.map((note, index) => (
+                    <Draggable
+                      key={note.id}
+                      draggableId={`todo-${note.id}`}
+                      index={index}
+                    >
+                      {(provided, snapshot) => (
+                        <div
+                          ref={provided.innerRef}
+                          {...provided.draggableProps}
+                          {...provided.dragHandleProps}
+                          style={provided.draggableProps.style}
+                          className={`custom-drag-cursor ${snapshot.isDragging ? "shadow-lg" : ""}`}
+                        >
+                          <NoteItem
+                            note={note}
+                            onToggleComplete={toggleComplete}
+                            onDelete={deleteNote}
+                            onMoveUp={(id) => moveNote(id, -1, false)}
+                            onMoveDown={(id) => moveNote(id, 1, false)}
+                            onUpdate={updateNote}
+                            disableSort={false}
+                          />
+                        </div>
+                      )}
+                    </Draggable>
+                  ))}
+                  {provided.placeholder}
+                </div>
+              )}
+            </Droppable>
+          </DragDropContext>
         )}
       </div>
 
-      {/* Finished Section */}
+      {/* ---------- FINISHED ---------- */}
       <div className="w-full max-w-5xl mb-10">
         <h2 className="text-2xl font-semibold text-gray-700 mb-4">Finished</h2>
         {finishedNotes.length === 0 ? (
@@ -266,14 +338,14 @@ function App() {
               onToggleComplete={toggleComplete}
               onDelete={deleteNote}
               onUpdate={updateNote}
-              disableSort={true} // ✅ disables up/down for finished notes
+              disableSort={true}
             />
           ))
         )}
       </div>
 
       <footer className="mt-16 text-gray-400 text-sm">
-        Built with 💜 using React + Django + Tailwind
+        Built with React + Django + Tailwind
       </footer>
     </div>
   );

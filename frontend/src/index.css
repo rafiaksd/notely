@@ -1,0 +1,14 @@
+.custom-drag-cursor {
+  /* 5×5 icon, hotspot at center (2.5, 2.5) */
+  cursor: url('/hand.png') 2.5 2.5, grab !important;
+}
+
+.custom-drag-cursor:active {
+  cursor: url('/hand.png') 2.5 2.5, grabbing !important;
+}
+
+/* Optional: Add hover glow for better UX */
+.custom-drag-cursor:hover {
+  filter: brightness(1.2);
+  transition: filter 0.2s ease;
+}

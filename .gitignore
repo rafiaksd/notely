@@ -26,3 +26,4 @@ dist-ssr
 *.sqlite3
 /venv/
 /backend/venv/
+/backend/db.sqlite3
