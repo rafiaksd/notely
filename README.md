@@ -51,3 +51,18 @@ npm install
 npm run dev
 ```
 
+Folder Structure
+```
+notely/
+│
+├── backend/          # Django backend API
+│   ├── notes/        
+│   └── manage.py
+│
+├── frontend/         # React frontend
+│   ├── src/
+│   └── package.json
+│
+└── README.md
+```
+
