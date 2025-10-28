@@ -150,6 +150,7 @@ function App() {
     );
   };
 
+  //test comment
   const toggleComplete = async (id) => {
     const note = notes.find((n) => n.id === id);
     const completed = !note.completed;
