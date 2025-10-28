@@ -1,40 +1,110 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import api from "./api";
 
-function NoteItem({ note, onToggleComplete, onDelete, onMoveUp, onMoveDown }) {
+function NoteItem({
+  note,
+  onToggleComplete,
+  onDelete,
+  onMoveUp,
+  onMoveDown,
+  onUpdate,
+  disableSort,
+}) {
+  const [isEditing, setIsEditing] = useState(false);
+  const [editTitle, setEditTitle] = useState(note.title);
+
+  const saveEdit = () => {
+    if (editTitle.trim() && editTitle !== note.title) {
+      onUpdate(note.id, editTitle);
+    }
+    setIsEditing(false);
+  };
+
   return (
     <div className="bg-white p-5 rounded-xl shadow-sm hover:shadow-md transition-all border border-gray-100 flex justify-between items-center mb-2">
-      <div>
-        <h3 className={`${note.completed ? "line-through text-gray-400" : "text-gray-800"} font-semibold`}>
-          {note.title}
-        </h3>
+      <div className="flex-1">
+        {isEditing ? (
+          <input
+            type="text"
+            value={editTitle}
+            onChange={(e) => setEditTitle(e.target.value)}
+            onBlur={saveEdit}
+            onKeyDown={(e) => e.key === "Enter" && saveEdit()}
+            autoFocus
+            className="w-full px-2 py-1 border rounded text-gray-700"
+          />
+        ) : (
+          <>
+            <h3
+              className={`${
+                note.completed ? "line-through text-gray-400" : "text-gray-800"
+              } font-semibold`}
+            >
+              {note.title}
+            </h3>
+
+            {/* Show completion timestamp */}
+            {note.completed && note.completed_at && (
+              <p className="text-xs text-gray-400 mt-1">
+                Completed {new Date(note.completed_at).toLocaleString()}
+              </p>
+            )}
+          </>
+        )}
       </div>
 
       <div className="flex space-x-2">
-        <button
-          onClick={() => onMoveUp(note.id)}
-          className="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300 text-sm"
-        >
-          ↑
-        </button>
-        <button
-          onClick={() => onMoveDown(note.id)}
-          className="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300 text-sm"
-        >
-          ↓
-        </button>
-        <button
-          onClick={() => onToggleComplete(note.id)}
-          className={`px-3 py-1 rounded text-white text-sm ${note.completed ? "bg-yellow-500 hover:bg-yellow-600" : "bg-green-500 hover:bg-green-600"}`}
-        >
-          {note.completed ? "Undo" : "Done"}
-        </button>
-        <button
-          onClick={() => onDelete(note.id)}
-          className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600 text-sm"
-        >
-          Delete
-        </button>
+        {/* Disable sorting for finished notes */}
+        {!disableSort && !isEditing && (
+          <>
+            <button
+              onClick={() => onMoveUp(note.id)}
+              className="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300 text-sm"
+            >
+              ↑
+            </button>
+            <button
+              onClick={() => onMoveDown(note.id)}
+              className="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300 text-sm"
+            >
+              ↓
+            </button>
+          </>
+        )}
+
+        {isEditing ? (
+          <button
+            onClick={saveEdit}
+            className="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600 text-sm"
+          >
+            Save
+          </button>
+        ) : (
+          <>
+            <button
+              onClick={() => setIsEditing(true)}
+              className="px-3 py-1 bg-yellow-400 text-white rounded hover:bg-yellow-500 text-sm"
+            >
+              Edit
+            </button>
+            <button
+              onClick={() => onToggleComplete(note.id)}
+              className={`px-3 py-1 rounded text-white text-sm ${
+                note.completed
+                  ? "bg-yellow-500 hover:bg-yellow-600"
+                  : "bg-green-500 hover:bg-green-600"
+              }`}
+            >
+              {note.completed ? "Undo" : "Done"}
+            </button>
+            <button
+              onClick={() => onDelete(note.id)}
+              className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600 text-sm"
+            >
+              Delete
+            </button>
+          </>
+        )}
       </div>
     </div>
   );
@@ -89,36 +159,32 @@ function App() {
     );
   };
 
-const moveNote = async (id, direction, completed) => {
-  const sectionNotes = notes.filter((n) => n.completed === completed);
-  const index = sectionNotes.findIndex((n) => n.id === id);
-  const newIndex = index + direction;
-  if (newIndex < 0 || newIndex >= sectionNotes.length) return;
+  const moveNote = async (id, direction, completed) => {
+    const sectionNotes = notes.filter((n) => n.completed === completed);
+    const index = sectionNotes.findIndex((n) => n.id === id);
+    const newIndex = index + direction;
+    if (newIndex < 0 || newIndex >= sectionNotes.length) return;
 
-  // Create a new array with swapped positions
-  const newSection = [...sectionNotes];
-  [newSection[index], newSection[newIndex]] = [newSection[newIndex], newSection[index]];
+    const newSection = [...sectionNotes];
+    [newSection[index], newSection[newIndex]] = [
+      newSection[newIndex],
+      newSection[index],
+    ];
 
-  // Update positions in backend
-  await Promise.all(
-    newSection.map((note, i) =>
-      api.patch(`notes/${note.id}/`, { position: i })
-    )
-  );
+    await Promise.all(
+      newSection.map((note, i) =>
+        api.patch(`notes/${note.id}/`, { position: i })
+      )
+    );
 
-  // Update local state with new positions
-  const updatedSection = newSection.map((note, i) => ({
-    ...note,
-    position: i,
-  }));
+    const updatedSection = newSection.map((note, i) => ({
+      ...note,
+      position: i,
+    }));
 
-  // Merge with other section and ensure correct sorting
-  const otherSection = notes.filter((n) => n.completed !== completed);
-  const updatedNotes = [...otherSection, ...updatedSection].sort((a, b) => a.position - b.position);
-
-  // Force state update to trigger re-render
-  setNotes([...updatedNotes]);
-};
+    const otherSection = notes.filter((n) => n.completed !== completed);
+    setNotes([...otherSection, ...updatedSection]);
+  };
 
   const activeNotes = notes
     .filter((n) => !n.completed)
@@ -173,6 +239,8 @@ const moveNote = async (id, direction, completed) => {
               onDelete={deleteNote}
               onMoveUp={(id) => moveNote(id, -1, false)}
               onMoveDown={(id) => moveNote(id, 1, false)}
+              onUpdate={updateNote}
+              disableSort={false}
             />
           ))
         )}
@@ -192,8 +260,8 @@ const moveNote = async (id, direction, completed) => {
               note={note}
               onToggleComplete={toggleComplete}
               onDelete={deleteNote}
-              onMoveUp={(id) => moveNote(id, -1, true)}
-              onMoveDown={(id) => moveNote(id, 1, true)}
+              onUpdate={updateNote}
+              disableSort={true} // ✅ disables up/down for finished notes
             />
           ))
         )}
