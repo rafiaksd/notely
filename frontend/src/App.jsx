@@ -46,7 +46,11 @@ function NoteItem({
             {/* Show completion timestamp */}
             {note.completed && note.completed_at && (
               <p className="text-xs text-gray-400 mt-1">
-                Completed {new Date(note.completed_at).toLocaleString()}
+                Completed{" "}
+                {new Date(note.completed_at).toLocaleString([], {
+                  dateStyle: "short",
+                  timeStyle: "short",
+                })}
               </p>
             )}
           </>

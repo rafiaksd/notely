@@ -8,7 +8,7 @@
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "start-all": "concurrently \"call ..\\venv\\Scripts\\activate.bat && cd ..\\backend && python manage.py runserver\" \"npm run dev\""
+    "start-all": "concurrently \"call ..\\backend\\venv\\Scripts\\activate.bat && cd ..\\backend && python manage.py runserver\" \"npm run dev\""
   },
   "dependencies": {
     "axios": "^1.12.2",
