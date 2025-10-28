@@ -10,10 +10,7 @@ function NoteItem({
   note,
   onToggleComplete,
   onDelete,
-  onMoveUp,
-  onMoveDown,
   onUpdate,
-  disableSort,
 }) {
   const [isEditing, setIsEditing] = useState(false);
   const [editTitle, setEditTitle] = useState(note.title);
@@ -62,24 +59,6 @@ function NoteItem({
       </div>
 
       <div className="flex space-x-2">
-        {/* Up / Down buttons – only for unfinished tasks */}
-        {!disableSort && !isEditing && (
-          <>
-            <button
-              onClick={() => onMoveUp(note.id)}
-              className="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300 text-sm"
-            >
-              Up
-            </button>
-            <button
-              onClick={() => onMoveDown(note.id)}
-              className="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300 text-sm"
-            >
-              Down
-            </button>
-          </>
-        )}
-
         {isEditing ? (
           <button
             onClick={saveEdit}
@@ -122,9 +101,6 @@ function App() {
   const [notes, setNotes] = useState([]);
   const [title, setTitle] = useState("");
 
-  /* ------------------------------------------------------------------ */
-  /*  FETCH / CREATE / DELETE / UPDATE / COMPLETE                       */
-  /* ------------------------------------------------------------------ */
   useEffect(() => {
     fetchNotes();
   }, []);
@@ -170,66 +146,27 @@ function App() {
     );
   };
 
-  /* ------------------------------------------------------------------ */
-  /*  MOVE (UP / DOWN) – used by the ↑/↓ buttons                        */
-  /* ------------------------------------------------------------------ */
-  const moveNote = async (id, direction, completed) => {
-    const sectionNotes = notes.filter((n) => n.completed === completed);
-    const index = sectionNotes.findIndex((n) => n.id === id);
-    const newIndex = index + direction;
-    if (newIndex < 0 || newIndex >= sectionNotes.length) return;
-
-    const newSection = [...sectionNotes];
-    [newSection[index], newSection[newIndex]] = [
-      newSection[newIndex],
-      newSection[index],
-    ];
-
-    await Promise.all(
-      newSection.map((note, i) =>
-        api.patch(`notes/${note.id}/`, { position: i })
-      )
-    );
-
-    const updatedSection = newSection.map((note, i) => ({
-      ...note,
-      position: i,
-    }));
-
-    const otherSection = notes.filter((n) => n.completed !== completed);
-    setNotes([...otherSection, ...updatedSection]);
-  };
-
-  /* ------------------------------------------------------------------ */
-  /*  DRAG-AND-DROP HANDLER                                            */
-  /* ------------------------------------------------------------------ */
   const handleDragEnd = async (result) => {
-    if (!result.destination) return; // dropped outside the list
+    if (!result.destination) return;
     const { source, destination } = result;
-    if (source.index === destination.index) return; // no change
+    if (source.index === destination.index) return;
 
     const reordered = Array.from(activeNotes);
     const [moved] = reordered.splice(source.index, 1);
     reordered.splice(destination.index, 0, moved);
 
-    // Optimistically update UI
     setNotes((prev) => {
       const finished = prev.filter((n) => n.completed);
       return [...finished, ...reordered];
     });
 
-    // Persist new positions
     await Promise.all(
       reordered.map((note, i) => api.patch(`notes/${note.id}/`, { position: i }))
     );
 
-    // Refresh from server (optional – keeps UI in sync with other clients)
     fetchNotes();
   };
 
-  /* ------------------------------------------------------------------ */
-  /*  DERIVED LISTS                                                    */
-  /* ------------------------------------------------------------------ */
   const activeNotes = notes
     .filter((n) => !n.completed)
     .sort((a, b) => a.position - b.position);
@@ -238,9 +175,6 @@ function App() {
     .filter((n) => n.completed)
     .sort((a, b) => new Date(b.completed_at) - new Date(a.completed_at));
 
-  /* ------------------------------------------------------------------ */
-  /*  RENDER                                                          */
-  /* ------------------------------------------------------------------ */
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-100 via-white to-purple-100 flex flex-col items-center py-10 px-6">
       {/* Header */}
@@ -271,7 +205,7 @@ function App() {
         </button>
       </form>
 
-      {/* ---------- TO-DO (drag-and-drop) ---------- */}
+      {/* To-Do Section – Drag & Drop Only */}
       <div className="w-full max-w-5xl mb-10">
         <h2 className="text-2xl font-semibold text-gray-700 mb-4">To-Do</h2>
 
@@ -306,10 +240,7 @@ function App() {
                             note={note}
                             onToggleComplete={toggleComplete}
                             onDelete={deleteNote}
-                            onMoveUp={(id) => moveNote(id, -1, false)}
-                            onMoveDown={(id) => moveNote(id, 1, false)}
                             onUpdate={updateNote}
-                            disableSort={false}
                           />
                         </div>
                       )}
@@ -323,7 +254,7 @@ function App() {
         )}
       </div>
 
-      {/* ---------- FINISHED ---------- */}
+      {/* Finished Section */}
       <div className="w-full max-w-5xl mb-10">
         <h2 className="text-2xl font-semibold text-gray-700 mb-4">Finished</h2>
         {finishedNotes.length === 0 ? (
@@ -338,7 +269,6 @@ function App() {
               onToggleComplete={toggleComplete}
               onDelete={deleteNote}
               onUpdate={updateNote}
-              disableSort={true}
             />
           ))
         )}
