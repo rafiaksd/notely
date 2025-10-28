@@ -10,7 +10,7 @@ Keep track of your tasks, mark them as done, delete them, and reorder them with 
 - Add new tasks
 - Mark tasks as **Done** or **Undo**
 - Delete tasks
-- Reorder tasks using **Up/Down arrows**
+- **Drag and drop tasks** to reorder their priority!
 - Separate sections for **To-Do** and **Finished** tasks
 - Modern, responsive UI with Tailwind CSS
 
