@@ -9,6 +9,6 @@
 
 /* Optional: Add hover glow for better UX */
 .custom-drag-cursor:hover {
-  filter: brightness(1.2);
-  transition: filter 0.2s ease;
+  filter: brightness(1.08);
+  transition: filter 0.1s ease;
 }

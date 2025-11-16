@@ -71,11 +71,11 @@ function NoteItem({ note, onToggleComplete, onDelete, onUpdate }) {
           </>
         )}
 
-        <div className="flex max-h-8 space-y-2 ml-4">
+        <div className="flex space-y-2 ml-2 mt-2">
           {isEditing ? (
             <button
               onClick={saveEdit}
-              className="px-3 py-1 bg-sky-500 text-white font-bold rounded shadow-[4px_4px_0_rgba(0,0,0,0.2)] hover:shadow-[6px_6px_0_rgba(0,0,0,0.25)] transition-shadow text-sm"
+              className="px-3 h-8 mr-2 bg-sky-500 text-white font-bold rounded shadow-[3px_3px_0_rgba(0,0,0,0.2)] hover:shadow-[4px_4px_0_rgba(0,0,0,0.25)] transition-shadow text-sm"
             >
               Save
             </button>
@@ -83,28 +83,28 @@ function NoteItem({ note, onToggleComplete, onDelete, onUpdate }) {
             <>
               <button
                 onClick={() => setIsEditing(true)}
-                className="px-3 py-1 bg-yellow-400 text-black font-bold rounded shadow-[4px_4px_0_rgba(0,0,0,0.2)] hover:shadow-[6px_6px_0_rgba(0,0,0,0.25)] transition-shadow text-sm"
+                className="px-3 h-8 mr-2 bg-yellow-400 text-black font-bold rounded shadow-[3px_3px_0_rgba(0,0,0,0.2)] hover:shadow-[4px_4px_0_rgba(0,0,0,0.25)] transition-shadow text-sm"
               >
                 Edit
               </button>
               {!note.completed ? (
                 <button
                   onClick={() => onToggleComplete(note.id)}
-                  className="px-3 py-1 bg-green-500 text-white font-bold rounded shadow-[4px_4px_0_rgba(0,0,0,0.2)] hover:shadow-[6px_6px_0_rgba(0,0,0,0.25)] transition-shadow text-sm"
+                  className="px-3 h-8 mr-2 bg-green-500 text-white font-bold rounded shadow-[3px_3px_0_rgba(0,0,0,0.2)] hover:shadow-[4px_4px_0_rgba(0,0,0,0.25)] transition-shadow text-sm"
                 >
                   Done
                 </button>
               ) : (
                 <button
                   onClick={() => onToggleComplete(note.id)}
-                  className="px-3 py-1 bg-orange-400 text-white font-bold rounded shadow-[4px_4px_0_rgba(0,0,0,0.2)] hover:shadow-[6px_6px_0_rgba(0,0,0,0.25)] transition-shadow text-sm"
+                  className="px-3 h-8 mr-2 bg-orange-400 text-white font-bold rounded shadow-[3px_3px_0_rgba(0,0,0,0.2)] hover:shadow-[4px_4px_0_rgba(0,0,0,0.25)] transition-shadow text-sm"
                 >
                   Undo
                 </button>
               )}
               <button
                 onClick={() => onDelete(note.id)}
-                className="px-3 py-1 bg-red-500 text-white font-bold rounded shadow-[4px_4px_0_rgba(0,0,0,0.2)] hover:shadow-[6px_6px_0_rgba(0,0,0,0.25)] transition-shadow text-sm"
+                className="px-3 h-8 mr-2 bg-red-500 text-white font-bold rounded shadow-[3px_3px_0_rgba(0,0,0,0.2)] hover:shadow-[4px_4px_0_rgba(0,0,0,0.25)] transition-shadow text-sm"
               >
                 Delete
               </button>
@@ -114,8 +114,7 @@ function NoteItem({ note, onToggleComplete, onDelete, onUpdate }) {
       </div>
       
       {note.deadline && !note.completed && (
-        <div className="ml-2 bg-red-400 text-black text-sm font-bold p-1 rounded">
-          <p>DEADLINE</p>
+        <div className="ml-2 bg-red-400 text-black text-sm font-bold p-2 rounded shadow-md">
           {new Date(note.deadline).toLocaleString("en-BD", {
             dateStyle: "short",
             timeStyle: "short",
@@ -249,7 +248,7 @@ function App() {
       </h1>
 
       {deadlineNotes.length > 0 && (
-  <div className="absolute top-2 right-2 w-60 sm:w-68 md:w-84 bg-red-100 border-4 border-red-400 rounded-xl shadow-[8px_8px_0_rgba(0,0,0,0.25)] z-50 p-1">
+  <div className="absolute top-4 right-2 md:right-4 w-60 sm:w-68 md:w-84 bg-red-100 border-4 border-red-400 rounded-xl shadow-[8px_8px_0_rgba(0,0,0,0.25)] z-50 p-1">
     <h3 className="font-extrabold text-red-600 mb-3 text-lg tracking-wide drop-shadow-[2px_2px_0_rgba(0,0,0,0.15)]">
       🔔 Upcoming Deadlines
     </h3>
@@ -298,7 +297,7 @@ function App() {
           <option value="later">Will Get Around To It</option>
         </select>
         <br />
-        <button className="px-5 py-2 bg-sky-500 text-white font-bold rounded shadow-[4px_4px_0_rgba(0,0,0,0.2)] hover:shadow-[6px_6px_0_rgba(0,0,0,0.25)] transition-shadow">
+        <button className="px-5 py-2 bg-sky-500 text-white font-bold rounded shadow-[3px_3px_0_rgba(0,0,0,0.2)] hover:shadow-[4px_4px_0_rgba(0,0,0,0.25)] transition-shadow">
           Add
         </button>
       </form>
@@ -363,7 +362,6 @@ function App() {
                     onToggleComplete={toggleComplete}
                     onDelete={deleteNote}
                     onUpdate={updateNote}
-                    className="bg-sky-100 border-4 border-sky-400 shadow-neobrutal hover:shadow-neobrutal-lg rounded-xl p-5 mb-2"
                   />
                 </div>
               )}
