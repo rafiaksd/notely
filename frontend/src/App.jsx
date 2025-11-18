@@ -22,7 +22,7 @@ function NoteItem({ note, onToggleComplete, onDelete, onUpdate }) {
 
   return (
     <>
-      <div className="relative bg-sky-100 border-4 border-sky-500 rounded-xl p-3 mb-5 shadow-[6px_6px_0_rgba(0,0,0,0.85)]">
+      <div className={`relative ${(note.section == "immediate") ? "bg-lime-300 border-sky-600" : "bg-sky-100 border-sky-500"} border-4 rounded-xl p-3 mb-5 shadow-[6px_6px_0_rgba(0,0,0,0.85)]`}>
         {/* Display Title */}
         <h3 className={`font-bold text-lg ${note.completed ? "line-through text-gray-400" : "text-gray-800"}`}>
           {note.title}
@@ -41,7 +41,7 @@ function NoteItem({ note, onToggleComplete, onDelete, onUpdate }) {
                 {/* + button */}
         <button
           onClick={() => setIsEditing(true)}
-          className="relative ml-[90%] bg-blue-900 text-white rounded-full w-8 h-8 cursor-pointer font-extrabold text-xl shadow-md hover:bg-sky-600"
+          className="relative ml-[90%] md:ml-[97%] bg-blue-900 text-white rounded-full w-8 h-8 cursor-pointer font-extrabold select-none text-xl shadow-md hover:bg-sky-600"
         >
           +
         </button>
@@ -228,28 +228,28 @@ function App() {
     <>
     
       {deadlineNotes.length > 0 && (
-  <div className="absolute sticky top-4 left-[85vw] md:right-4 w-60 sm:w-68 md:w-84 bg-red-100 border-4 border-red-400 rounded-xl shadow-[8px_8px_0_rgba(0,0,0,0.25)] z-50 p-1">
-    <h3 className="font-extrabold text-red-600 mb-3 text-lg tracking-wide drop-shadow-[2px_2px_0_rgba(0,0,0,0.15)]">
-      🔔 Upcoming Deadlines
-    </h3>
-    {deadlineNotes.map((note) => (
-      <div
-        key={note.id}
-        className="mb-3 p-2 rounded-lg bg-red-200 border-2 border-red-300 shadow-[4px_4px_0_rgba(0,0,0,0.1)] hover:shadow-[6px_6px_0_rgba(0,0,0,0.15)] transition-shadow"
-      >
-        <p className="text-red-700 font-bold uppercase text-sm mb-1">
-          {note.title}
-        </p>
-        <p className="text-xs text-gray-800">
-          {new Date(note.deadline).toLocaleString("en-BD", {
-            dateStyle: "short",
-            timeStyle: "short",
-            timeZone: "Asia/Dhaka",
-          })}
-        </p>
-      </div>
-    ))}
-  </div>
+        <div className="absolute sticky top-4 left-[85vw] md:right-4 w-60 sm:w-68 md:w-84 bg-red-100 border-4 border-red-400 rounded-xl shadow-[8px_8px_0_rgba(0,0,0,0.25)] z-50 p-1">
+          <h3 className="font-extrabold text-red-600 mb-3 text-lg tracking-wide drop-shadow-[2px_2px_0_rgba(0,0,0,0.15)]">
+            🔔 Upcoming Deadlines
+          </h3>
+          {deadlineNotes.map((note) => (
+            <div
+              key={note.id}
+              className="mb-3 p-2 rounded-lg bg-red-200 border-2 border-red-300 shadow-[4px_4px_0_rgba(0,0,0,0.1)] hover:shadow-[6px_6px_0_rgba(0,0,0,0.15)] transition-shadow"
+            >
+              <p className="text-red-700 font-bold uppercase text-sm mb-1">
+                {note.title}
+              </p>
+              <p className="text-xs text-gray-800">
+                {new Date(note.deadline).toLocaleString("en-BD", {
+                  dateStyle: "short",
+                  timeStyle: "short",
+                  timeZone: "Asia/Dhaka",
+                })}
+              </p>
+            </div>
+          ))}
+        </div>
       )}
     <div className="relative min-h-screen bg-gradient-to-br from-sky-50 via-white to-sky-100 flex flex-col items-center py-10 px-6">
       <h1 className="text-5xl font-extrabold text-sky-600 drop-shadow-[4px_4px_0_rgba(0,0,0,0.15)] mb-2 mr-auto lg:ml-[40px] xl:ml-[100px] 2xl:ml-[25vw]">
@@ -287,7 +287,7 @@ function App() {
       <DragDropContext onDragEnd={handleDragEnd}>
         {/* IMMEDIATE NOTES */}
         {immediateNotes.length > 0 && (
-          <div className="w-full max-w-5xl mb-6 bg-orange-300 p-12 rounded-2xl">
+          <div className="w-full max-w-5xl mb-6 bg-blue-300 p-12 rounded-2xl">
             <h2 className="text-4xl font-extrabold text-black mb-3">Immediate</h2>
             <Droppable droppableId="immediate">
               {(provided) => (
