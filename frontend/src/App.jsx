@@ -242,13 +242,10 @@ function App() {
     .sort((a, b) => new Date(a.deadline) - new Date(b.deadline));
 
   return (
-    <div className="relative min-h-screen bg-gradient-to-br from-sky-50 via-white to-sky-100 flex flex-col items-center py-10 px-6">
-      <h1 className="text-5xl font-extrabold text-sky-600 drop-shadow-[4px_4px_0_rgba(0,0,0,0.15)] mb-2 mr-auto lg:ml-[40px] xl:ml-[100px] 2xl:ml-[25vw]">
-        Notely
-      </h1>
-
+    <>
+    
       {deadlineNotes.length > 0 && (
-  <div className="absolute top-4 right-2 md:right-4 w-60 sm:w-68 md:w-84 bg-red-100 border-4 border-red-400 rounded-xl shadow-[8px_8px_0_rgba(0,0,0,0.25)] z-50 p-1">
+  <div className="absolute sticky top-4 left-[85vw] md:right-4 w-60 sm:w-68 md:w-84 bg-red-100 border-4 border-red-400 rounded-xl shadow-[8px_8px_0_rgba(0,0,0,0.25)] z-50 p-1">
     <h3 className="font-extrabold text-red-600 mb-3 text-lg tracking-wide drop-shadow-[2px_2px_0_rgba(0,0,0,0.15)]">
       🔔 Upcoming Deadlines
     </h3>
@@ -270,10 +267,12 @@ function App() {
       </div>
     ))}
   </div>
-)}
-
-
-      <form onSubmit={createNote} className="max-w-[300px] space-y-2 mb-6 mr-auto lg:ml-[40px] xl:ml-[100px] 2xl:ml-[25vw] mt-20">
+      )}
+    <div className="relative min-h-screen bg-gradient-to-br from-sky-50 via-white to-sky-100 flex flex-col items-center py-10 px-6">
+      <h1 className="text-5xl font-extrabold text-sky-600 drop-shadow-[4px_4px_0_rgba(0,0,0,0.15)] mb-2 mr-auto lg:ml-[40px] xl:ml-[100px] 2xl:ml-[25vw]">
+        Notely
+      </h1>
+      <form onSubmit={createNote} className="max-w-[300px] space-y-2 mb-6 mr-auto lg:ml-[40px] xl:ml-[100px] 2xl:ml-[20vw] mt-20">
         <input
           type="text"
           placeholder="New note..."
@@ -305,8 +304,8 @@ function App() {
       <DragDropContext onDragEnd={handleDragEnd}>
         {/* IMMEDIATE NOTES */}
         {immediateNotes.length > 0 && (
-          <div className="w-full max-w-5xl mb-6">
-            <h2 className="text-2xl font-bold text-sky-700 mb-3">Immediate</h2>
+          <div className="w-full max-w-5xl mb-6 bg-orange-300 p-12 rounded-2xl">
+            <h2 className="text-4xl font-extrabold text-black mb-3">Immediate</h2>
             <Droppable droppableId="immediate">
               {(provided) => (
                 <div {...provided.droppableProps} ref={provided.innerRef} className="space-y-2">
@@ -434,6 +433,7 @@ function App() {
 
       </DragDropContext>
     </div>
+    </>
   );
 }
 
