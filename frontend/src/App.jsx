@@ -21,111 +21,94 @@ function NoteItem({ note, onToggleComplete, onDelete, onUpdate }) {
   };
 
   return (
-    <div className="relative bg-sky-100 border-4 border-sky-500 rounded-xl p-3 mb-5 flex justify-between items-start shadow-[6px_6px_0_rgba(0,0,0,0.85)] hover:shadow-[10px_10px_0_rgba(0,0,0,0.95)] transition-shadow duration-150">
-      <div className="flex-1">
-        {isEditing ? (
-          <>
+    <>
+      <div className="relative bg-sky-100 border-4 border-sky-500 rounded-xl p-3 mb-5 shadow-[6px_6px_0_rgba(0,0,0,0.85)]">
+        {/* Display Title */}
+        <h3 className={`font-bold text-lg ${note.completed ? "line-through text-gray-400" : "text-gray-800"}`}>
+          {note.title}
+        </h3>
+
+        {/* Deadline badge */}
+        {note.deadline && !note.completed && (
+          <div className="mt-2 inline-block bg-red-400 text-black text-sm font-bold px-2 py-1 rounded">
+            {new Date(note.deadline).toLocaleString("en-BD", {
+              dateStyle: "short",
+              timeStyle: "short",
+              timeZone: "Asia/Dhaka",
+            })}
+          </div>
+        )}
+                {/* + button */}
+        <button
+          onClick={() => setIsEditing(true)}
+          className="relative ml-[90%] bg-blue-900 text-white rounded-full w-8 h-8 cursor-pointer font-extrabold text-xl shadow-md hover:bg-sky-600"
+        >
+          +
+        </button>
+      </div>
+        
+      {/* EDIT MODAL */}
+      {isEditing && (
+        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl p-6 w-[90%] max-w-md shadow-xl border-4 border-sky-500">
+            <h2 className="text-xl font-bold mb-4 text-sky-700">Edit Note</h2>
+
             <input
               type="text"
               value={editTitle}
               onChange={(e) => setEditTitle(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && saveEdit()}
-              placeholder="Title"
-              className="w-full px-2 py-1 mb-1 border-4 border-sky-500 rounded shadow-[4px_4px_0_rgba(0,0,0,0.15)] focus:outline-none focus:ring-2 focus:ring-sky-400"
+              className="w-full px-3 py-2 border-4 border-sky-500 rounded mb-3"
             />
+
             <input
               type="datetime-local"
               value={editDeadline}
               onChange={(e) => setEditDeadline(e.target.value)}
-              className="w-full px-2 py-1 mb-1 border-4 border-sky-500 rounded shadow-[4px_4px_0_rgba(0,0,0,0.15)] focus:outline-none focus:ring-2 focus:ring-sky-400"
+              className="w-full px-3 py-2 border-4 border-sky-500 rounded mb-3"
             />
+
             <select
               value={editSection}
               onChange={(e) => setEditSection(e.target.value)}
-              className="w-full px-2 py-1 mb-1 border-4 border-sky-500 rounded shadow-[4px_4px_0_rgba(0,0,0,0.15)] focus:outline-none focus:ring-2 focus:ring-sky-400"
+              className="w-full px-3 py-2 border-4 border-sky-500 rounded mb-3"
             >
               <option value="immediate">Immediate</option>
               <option value="todo">To-Do</option>
               <option value="later">Will Get Around To It</option>
             </select>
-          </>
-        ) : (
-          <>
-            <h3
-              className={`${
-                note.completed ? "line-through text-gray-400" : "text-gray-800"
-              } font-bold text-lg`}
-            >
-              {note.title}
-            </h3>
-            {note.completed && note.completed_at && (
-              <p className="text-xs text-gray-400 mt-1">
-                Completed{" "}
-                {new Date(note.completed_at).toLocaleString("en-BD", {
-                  dateStyle: "short",
-                  timeStyle: "short",
-                  timeZone: "Asia/Dhaka",
-                })}
-              </p>
-            )}
-          </>
-        )}
 
-        <div className="flex space-y-2 ml-2 mt-2">
-          {isEditing ? (
-            <button
-              onClick={saveEdit}
-              className="px-3 h-8 mr-2 bg-sky-500 text-white font-bold rounded shadow-[3px_3px_0_rgba(0,0,0,0.2)] hover:shadow-[4px_4px_0_rgba(0,0,0,0.25)] transition-shadow text-sm"
-            >
-              Save
-            </button>
-          ) : (
-            <>
+            <div className="flex justify-between">
               <button
-                onClick={() => setIsEditing(true)}
-                className="px-3 h-8 mr-2 bg-yellow-400 text-black font-bold rounded shadow-[3px_3px_0_rgba(0,0,0,0.2)] hover:shadow-[4px_4px_0_rgba(0,0,0,0.25)] transition-shadow text-sm"
+                onClick={() => setIsEditing(false)}
+                className="px-4 py-2 bg-gray-300 rounded font-bold"
               >
-                Edit
+                Cancel
               </button>
-              {!note.completed ? (
-                <button
-                  onClick={() => onToggleComplete(note.id)}
-                  className="px-3 h-8 mr-2 bg-green-500 text-white font-bold rounded shadow-[3px_3px_0_rgba(0,0,0,0.2)] hover:shadow-[4px_4px_0_rgba(0,0,0,0.25)] transition-shadow text-sm"
-                >
-                  Done
-                </button>
-              ) : (
-                <button
-                  onClick={() => onToggleComplete(note.id)}
-                  className="px-3 h-8 mr-2 bg-orange-400 text-white font-bold rounded shadow-[3px_3px_0_rgba(0,0,0,0.2)] hover:shadow-[4px_4px_0_rgba(0,0,0,0.25)] transition-shadow text-sm"
-                >
-                  Undo
-                </button>
-              )}
+
               <button
-                onClick={() => onDelete(note.id)}
-                className="px-3 h-8 mr-2 bg-red-500 text-white font-bold rounded shadow-[3px_3px_0_rgba(0,0,0,0.2)] hover:shadow-[4px_4px_0_rgba(0,0,0,0.25)] transition-shadow text-sm"
+                onClick={saveEdit}
+                className="px-4 py-2 bg-sky-500 text-white rounded font-bold"
+              >
+                Save
+              </button>
+
+              <button
+                onClick={() => {
+                  onDelete(note.id);
+                  setIsEditing(false);
+                }}
+                className="px-4 py-2 bg-red-500 text-white rounded font-bold"
               >
                 Delete
               </button>
-            </>
-          )}
-        </div>
-      </div>
-      
-      {note.deadline && !note.completed && (
-        <div className="ml-2 bg-red-400 text-black text-sm font-bold p-2 rounded shadow-md">
-          {new Date(note.deadline).toLocaleString("en-BD", {
-            dateStyle: "short",
-            timeStyle: "short",
-            timeZone: "Asia/Dhaka",
-          })}
+            </div>
+          </div>
         </div>
       )}
-      
-    </div>
+    </>
   );
 }
+
 
 function App() {
   const [notes, setNotes] = useState([]);
