@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { useEffect, useState } from "react";
 import api from "./api";
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
@@ -27,6 +28,15 @@ function NoteItem({ note, onToggleComplete, onDelete, onUpdate }) {
         <h3 className={`font-bold text-lg ${note.completed ? "line-through text-gray-400" : "text-gray-800"}`}>
           {note.title}
         </h3>
+        {note.completed && note.completed_at && (
+          <div className="mt-4 inline-block bg-orange-400 text-black text-sm font-semibold px-2 py-1 rounded">
+            {new Date(note.completed_at).toLocaleString("en-BD", {
+              dateStyle: "short",
+              timeStyle: "short",
+              timeZone: "Asia/Dhaka",
+            })}
+          </div>
+        )}
 
         {/* Deadline badge */}
         {note.deadline && !note.completed && (
@@ -38,77 +48,82 @@ function NoteItem({ note, onToggleComplete, onDelete, onUpdate }) {
             })}
           </div>
         )}
-                {/* + button */}
+        {/* ✏️ button */}
         <button
           onClick={() => setIsEditing(true)}
-          className="relative ml-[90%] md:ml-[97%] bg-blue-900 text-white rounded-full w-8 h-8 cursor-pointer font-extrabold select-none text-xl shadow-md hover:bg-sky-600"
+          className="relative ml-[90%] md:ml-[95%] bg-blue-900 text-white rounded-lg w-8 h-8 cursor-pointer font-extrabold select-none text-xl shadow-md hover:bg-sky-600"
         >
-          +
+          ✏️
         </button>
       </div>
         
-      {/* EDIT MODAL */}
       {isEditing && (
-        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-          <div className="bg-white rounded-xl p-6 w-[90%] max-w-md shadow-xl border-4 border-sky-500">
-            <h2 className="text-xl font-bold mb-4 text-sky-700">Edit Note</h2>
+    <div className="mt-3 p-3 bg-white border-2 border-sky-500 rounded-lg shadow-md">
+      <input
+        type="text"
+        value={editTitle}
+        onChange={(e) => setEditTitle(e.target.value)}
+        className="w-full px-3 py-2 border-2 border-sky-500 rounded mb-2"
+      />
+      <input
+        type="datetime-local"
+        value={editDeadline}
+        onChange={(e) => setEditDeadline(e.target.value)}
+        className="w-full px-3 py-2 border-2 border-sky-500 rounded mb-2"
+      />
+      <select
+        value={editSection}
+        onChange={(e) => setEditSection(e.target.value)}
+        className="w-full px-3 py-2 border-2 border-sky-500 rounded mb-2"
+      >
+        <option value="immediate">Immediate</option>
+        <option value="todo">To-Do</option>
+        <option value="later">Will Get Around To It</option>
+      </select>
 
-            <input
-              type="text"
-              value={editTitle}
-              onChange={(e) => setEditTitle(e.target.value)}
-              className="w-full px-3 py-2 border-4 border-sky-500 rounded mb-3"
-            />
-
-            <input
-              type="datetime-local"
-              value={editDeadline}
-              onChange={(e) => setEditDeadline(e.target.value)}
-              className="w-full px-3 py-2 border-4 border-sky-500 rounded mb-3"
-            />
-
-            <select
-              value={editSection}
-              onChange={(e) => setEditSection(e.target.value)}
-              className="w-full px-3 py-2 border-4 border-sky-500 rounded mb-3"
-            >
-              <option value="immediate">Immediate</option>
-              <option value="todo">To-Do</option>
-              <option value="later">Will Get Around To It</option>
-            </select>
-
-            <div className="flex justify-between">
-              <button
-                onClick={() => setIsEditing(false)}
-                className="px-4 py-2 bg-gray-300 rounded font-bold"
-              >
-                Cancel
-              </button>
-
-              <button
-                onClick={saveEdit}
-                className="px-4 py-2 bg-sky-500 text-white rounded font-bold"
-              >
-                Save
-              </button>
-
-              <button
-                onClick={() => {
-                  onDelete(note.id);
-                  setIsEditing(false);
-                }}
-                className="px-4 py-2 bg-red-500 text-white rounded font-bold"
-              >
-                Delete
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <div className="flex justify-between mt-2">
+        <button
+          onClick={() => setIsEditing(false)}
+          className="px-3 py-1 bg-gray-300 rounded font-bold"
+        >
+          Cancel
+        </button>
+        <button
+          onClick={() => onToggleComplete(note.id)}
+          className="top-2 right-16 bg-green-600 text-white
+                    rounded-lg w-8 h-8 cursor-pointer font-extrabold 
+                    shadow-md hover:bg-green-700"
+        >
+          ✔️
+        </button>
+        <button
+          onClick={saveEdit}
+          className="px-3 py-1 bg-sky-500 text-white rounded font-bold"
+        >
+          Save
+        </button>
+        <button
+          onClick={() => {
+            onDelete(note.id);
+            setIsEditing(false);
+          }}
+          className="px-3 py-1 bg-red-500 text-white rounded font-bold"
+        >
+          Delete
+        </button>
+      </div>
+    </div>
+  )}
     </>
   );
 }
 
+// helper function
+function roundToNearestMinute(date) {
+  const ms = date.getTime();
+  const minute = 60000;
+  return new Date(Math.round(ms / minute) * minute);
+}
 
 function App() {
   const [notes, setNotes] = useState([]);
