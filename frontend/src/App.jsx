@@ -111,6 +111,12 @@ function NoteItem({ note, onToggleComplete, onDelete, onUpdate }) {
             className="w-full px-3 py-2 border-2 border-sky-500 rounded mb-2 resize-none"
             rows={3}
           ></textarea>
+
+          {/* Character counter */}
+          <div className="text-sm text-gray-500 mb-2 -mt-2">
+            {editTitle.length}/2000
+          </div>
+          
           <input
             type="datetime-local"
             value={editDeadline}
@@ -322,6 +328,12 @@ function App() {
             className="px-4 py-2 w-[220px] sm:w-[50vw] rounded border-4 border-sky-500 shadow-[4px_4px_0_rgba(0,0,0,0.15)] focus:outline-none focus:ring-2 focus:ring-sky-400 resize-none"
             rows={3} // Adjust how many lines you want visible initially
           ></textarea>
+
+          {/* Character counter */}
+          <div className="text-sm text-gray-500 -mt-2">
+            {title.length}/2000
+          </div>
+          
           <input
             type="datetime-local"
             value={deadline}
