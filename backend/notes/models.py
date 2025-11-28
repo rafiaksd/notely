@@ -9,7 +9,7 @@ class Note(models.Model):
         ('finished', 'Finished'),
     ]
 
-    title = models.CharField(max_length=255)
+    title = models.CharField(max_length=2000)
     completed = models.BooleanField(default=False)
     section = models.CharField(max_length=20, choices=SECTION_CHOICES, default='todo')
     position = models.PositiveIntegerField(default=0)

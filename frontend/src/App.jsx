@@ -59,7 +59,7 @@ function NoteItem({ note, onToggleComplete, onDelete, onUpdate }) {
         
         {/* Display Title */}
         <h3
-          className={`font-bold text-lg ${
+          className={`font-bold text-lg whitespace-pre-wrap ${
             note.completed ? "line-through text-gray-400" : "text-gray-800"
           }`}
         >
@@ -105,12 +105,12 @@ function NoteItem({ note, onToggleComplete, onDelete, onUpdate }) {
             >
               ✔️
           </button>
-          <input
-            type="text"
+          <textarea
             value={editTitle}
             onChange={(e) => setEditTitle(e.target.value)}
-            className="w-full px-3 py-2 border-2 border-sky-500 rounded mb-2"
-          />
+            className="w-full px-3 py-2 border-2 border-sky-500 rounded mb-2 resize-none"
+            rows={3}
+          ></textarea>
           <input
             type="datetime-local"
             value={editDeadline}
@@ -315,13 +315,13 @@ function App() {
           onSubmit={createNote}
           className="max-w-[300px] space-y-2 mb-6 mr-auto lg:ml-[40px] xl:ml-[100px] 2xl:ml-[20vw] mt-20"
         >
-          <input
-            type="text"
+          <textarea
             placeholder="New note..."
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            className="px-4 py-2 w-[220px] sm:w-[50vw] rounded border-4 border-sky-500 shadow-[4px_4px_0_rgba(0,0,0,0.15)] focus:outline-none focus:ring-2 focus:ring-sky-400"
-          />
+            className="px-4 py-2 w-[220px] sm:w-[50vw] rounded border-4 border-sky-500 shadow-[4px_4px_0_rgba(0,0,0,0.15)] focus:outline-none focus:ring-2 focus:ring-sky-400 resize-none"
+            rows={3} // Adjust how many lines you want visible initially
+          ></textarea>
           <input
             type="datetime-local"
             value={deadline}
