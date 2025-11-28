@@ -300,7 +300,7 @@ function App() {
               key={note.id}
               className="mb-3 p-2 rounded-lg bg-red-200 border-2 border-red-300 shadow-[4px_4px_0_rgba(0,0,0,0.1)] hover:shadow-[6px_6px_0_rgba(0,0,0,0.15)] transition-shadow"
             >
-              <p className="text-red-700 font-bold uppercase text-sm mb-1">{note.title}</p>
+              <p className="text-red-700 font-bold uppercase text-sm mb-1 whitespace-pre-wrap">{note.title}</p>
               <p className="text-xs text-gray-800">
                 {new Date(note.deadline).toLocaleString("en-BD", {
                   dateStyle: "short",
