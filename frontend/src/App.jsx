@@ -321,7 +321,7 @@ function App() {
   return (
     <>
       {deadlineNotes.length > 0 && (
-        <div className="absolute sticky top-4 left-[85vw] md:right-4 w-60 sm:w-68 md:w-84 bg-red-100 border-4 border-red-400 rounded-xl shadow-[8px_8px_0_rgba(0,0,0,0.25)] z-50 p-1">
+        <div className="absolute sticky top-4 left-[85vw] md:right-4 w-60 sm:w-68 md:w-76 bg-red-100 border-4 border-red-400 rounded-xl shadow-[8px_8px_0_rgba(0,0,0,0.25)] z-50 p-1">
           <h3 className="font-extrabold text-red-600 mb-3 text-lg tracking-wide drop-shadow-[2px_2px_0_rgba(0,0,0,0.15)]">
             🔔 Upcoming Deadlines
           </h3>
@@ -343,26 +343,23 @@ function App() {
         </div>
       )}
 
-      
-
-      <div className="relative min-h-screen bg-gradient-to-br from-sky-50 via-white to-sky-100 flex flex-col items-center py-10 px-6">
-
-        {/* QUOTES */}
+              {/* QUOTES */}
           {quotes.length > 0 && (
-          <div className="max-w-[300px] sm:max-w-[50vw] 
-                          mb-4 mr-auto 
-                          lg:ml-[40px] xl:ml-[100px] 2xl:ml-[20vw]">
+          <div className="max-w-[1300px] 
+                          mb-4 mr-auto">
 
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+            <div className="flex flex-wrap">
               {quotes.map((quote) => (
                 <div
                   key={quote.id}
                   className="relative group
-                            bg-yellow-100 border-2 border-black 
+                            bg-yellow-400 
                             rounded-md px-2 py-1 
-                            text-[9px] leading-tight text-gray-800
-                            shadow-[2px_2px_0_rgba(0,0,0,0.7)]
-                            hover:scale-105 transition-transform"
+                            Anonymous-Pro font-semibold
+                            text-[12px] text-gray-800
+                            hover:scale-130  transition-transform
+                            border-2 border-transparent hover:border-black hover:z-2
+                            max-w-[300px] min-w-[150px] ml-2 mb-2"
                 >
                   {quote.text}
 
@@ -391,7 +388,7 @@ function App() {
         )}
 
         {/* INSERT QUOTE */}
-        <div className="mt-2 flex">
+        <div className="mt-2 flex max-w-[400px] mx-auto">
           <input
             value={newQuote}
             onChange={(e) => setNewQuote(e.target.value)}
@@ -405,6 +402,11 @@ function App() {
             Add
           </button>
         </div>
+      
+
+      <div className="relative min-h-screen bg-gradient-to-br from-sky-50 via-white to-sky-100 flex flex-col items-center py-10 px-6">
+
+
         
         <h1 className="text-5xl font-extrabold text-sky-600 drop-shadow-[4px_4px_0_rgba(0,0,0,0.15)] mb-2 mr-auto lg:ml-[40px] xl:ml-[100px] 2xl:ml-[25vw]">
           Notely
