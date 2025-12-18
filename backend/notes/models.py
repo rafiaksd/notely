@@ -29,3 +29,11 @@ class Note(models.Model):
 
     def __str__(self):
         return f"[{self.section}] {self.title}"
+
+class Quote(models.Model):
+    text = models.CharField(max_length=300)
+    active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.text[:40]

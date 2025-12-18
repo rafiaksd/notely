@@ -175,10 +175,40 @@ function App() {
   const [title, setTitle] = useState("");
   const [section, setSection] = useState("todo");
   const [deadline, setDeadline] = useState("");
+  
+  const [quotes, setQuotes] = useState([]);
+  const [newQuote, setNewQuote] = useState("");
 
   useEffect(() => {
     fetchNotes();
+    fetchQuotes();
   }, []);
+
+  const fetchQuotes = async () => {
+    try {
+      const res = await api.get("quotes/");
+      setQuotes(res.data);
+    } catch (err) {
+      console.error("Failed to load quotes", err);
+    }
+  };
+
+  const addQuote = async () => {
+    if (!newQuote.trim()) return;
+
+    const res = await api.post("quotes/", { text: newQuote });
+    setQuotes(prev => [...prev, res.data]);
+    setNewQuote("");
+  };
+
+  const deleteQuote = async (id) => {
+    try {
+      await api.delete(`quotes/${id}/`);
+      setQuotes(prev => prev.filter(q => q.id !== id));
+    } catch (err) {
+      console.error("Failed to delete quote", err);
+    }
+  };
 
   const fetchNotes = async () => {
     const res = await api.get("notes/");
@@ -313,10 +343,74 @@ function App() {
         </div>
       )}
 
+      
+
       <div className="relative min-h-screen bg-gradient-to-br from-sky-50 via-white to-sky-100 flex flex-col items-center py-10 px-6">
+
+        {/* QUOTES */}
+          {quotes.length > 0 && (
+          <div className="max-w-[300px] sm:max-w-[50vw] 
+                          mb-4 mr-auto 
+                          lg:ml-[40px] xl:ml-[100px] 2xl:ml-[20vw]">
+
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+              {quotes.map((quote) => (
+                <div
+                  key={quote.id}
+                  className="relative group
+                            bg-yellow-100 border-2 border-black 
+                            rounded-md px-2 py-1 
+                            text-[9px] leading-tight text-gray-800
+                            shadow-[2px_2px_0_rgba(0,0,0,0.7)]
+                            hover:scale-105 transition-transform"
+                >
+                  {quote.text}
+
+                  {/* ❌ DELETE BUTTON (hover only) */}
+                  <button
+                    onClick={() => deleteQuote(quote.id)}
+                    className="absolute top-[-6px] right-[-6px]
+                              hidden group-hover:flex
+                              items-center justify-center
+                              w-4 h-4
+                              bg-red-600 text-white
+                              text-[10px] font-bold
+                              border-2 border-black
+                              rounded-full
+                              shadow-[1px_1px_0_rgba(0,0,0,0.8)]
+                              hover:bg-red-700"
+                    title="Delete quote"
+                  >
+                    ×
+                  </button>
+                </div>
+
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* INSERT QUOTE */}
+        <div className="mt-2 flex">
+          <input
+            value={newQuote}
+            onChange={(e) => setNewQuote(e.target.value)}
+            placeholder="Add quote"
+            className="text-[9px] px-1 py-[2px] border rounded w-full"
+          />
+          <button
+            onClick={addQuote}
+            className="text-[9px] mt-1 bg-black text-white px-2 rounded"
+          >
+            Add
+          </button>
+        </div>
+        
         <h1 className="text-5xl font-extrabold text-sky-600 drop-shadow-[4px_4px_0_rgba(0,0,0,0.15)] mb-2 mr-auto lg:ml-[40px] xl:ml-[100px] 2xl:ml-[25vw]">
           Notely
         </h1>
+
+        {/* FORM to CREATE TASK */}
         <form
           onSubmit={createNote}
           className="max-w-[300px] space-y-2 mb-6 mr-auto lg:ml-[40px] xl:ml-[100px] 2xl:ml-[20vw] mt-20"
