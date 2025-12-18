@@ -358,7 +358,7 @@ function App() {
                             Anonymous-Pro font-semibold
                             text-[12px] text-gray-800
                             hover:scale-130  transition-transform
-                            border-2 border-transparent hover:border-black hover:z-2
+                            border-2 border-transparent hover:border-black hover:z-50
                             max-w-[300px] min-w-[150px] ml-2 mb-2"
                 >
                   {quote.text}
